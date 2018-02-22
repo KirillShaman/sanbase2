@@ -7,6 +7,43 @@
   position: relative;
 }
 
+.top-menu .search-panel {
+  margin-left: 20px;
+}
+
+.top-menu .search-panel input {
+  background: hsla(164, 65%, 41%, 0) !important;
+  color: hsla(164, 65%, 41%, 0) !important;
+  width: 235px;
+  padding: 5px;
+}
+
+.top-menu .search-panel .search.icon {
+  color: black;
+  padding-top: 1px;
+}
+
+.top-menu .search-panel input::placeholder {
+  color: black !important;
+  opacity: 0.5 !important;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.top-menu .search-panel input:hover::placeholder {
+  opacity: 0.8 !important;
+}
+
+.top-menu .search-panel input:focus::placeholder {
+  color: black !important;
+}
+
+.top-menu .search-panel input:focus {
+  background: white !important;
+  color: black !important;
+  width: 235px;
+}
+
 .top-menu .left {
   display: flex;
   width: 50%;
