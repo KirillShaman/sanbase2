@@ -12,7 +12,9 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.TickerFetcher do
   alias Sanbase.Model.Project
   alias Sanbase.Repo
   alias Sanbase.ExternalServices.Coinmarketcap.Ticker
+  alias Sanbase.ExternalServices.Coinmarketcap.PricePoint
   alias Sanbase.Utils.Config
+  alias Sanbase.Prices.Store
 
   # 5 minutes
   @default_update_interval 1000 * 60 * 5
@@ -38,7 +40,11 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.TickerFetcher do
     tickers = Ticker.fetch_data()
 
     tickers
-    |> Enum.each(&store_ticker/1)
+    |> Enum.each(&store_latest_coinmarketcap_data/1)
+
+    tickers
+    |> Enum.flat_map(&Ticker.convert_for_importing/1)
+    |> Store.import()
 
     tickers
     |> Enum.take(top_projects_to_follow)
@@ -49,16 +55,18 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.TickerFetcher do
     {:noreply, state}
   end
 
-  defp get_or_create_ticker(coinmarketcap_id) do
+  # Helper functions
+
+  defp get_or_create_latest_coinmarketcap_data(coinmarketcap_id) do
     case Repo.get_by(LatestCoinmarketcapData, coinmarketcap_id: coinmarketcap_id) do
       nil -> %LatestCoinmarketcapData{coinmarketcap_id: coinmarketcap_id}
       entry -> entry
     end
   end
 
-  defp store_ticker(ticker) do
+  defp store_latest_coinmarketcap_data(ticker) do
     ticker.id
-    |> get_or_create_ticker()
+    |> get_or_create_latest_coinmarketcap_data()
     |> LatestCoinmarketcapData.changeset(%{
       market_cap_usd: ticker.market_cap_usd,
       name: ticker.name,

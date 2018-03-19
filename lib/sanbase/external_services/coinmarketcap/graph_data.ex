@@ -32,7 +32,7 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.GraphData do
   defp parse_json(json) do
     json
     |> Poison.decode!(as: %GraphData{})
-    |> convert_to_price_points
+    |> convert_to_price_points()
   end
 
   defp fetch_all_time_prices(coinmarketcap_id) do
@@ -82,12 +82,10 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.GraphData do
 
   defp daily_ranges(from_datetime, to_datetime) do
     Stream.unfold(from_datetime, fn start_interval ->
-      cond do
-        start_interval <= to_datetime ->
-          {start_interval, start_interval + @seconds_in_day}
-
-        true ->
-          nil
+      if start_interval <= to_datetime do
+        {start_interval, start_interval + @seconds_in_day}
+      else
+        nil
       end
     end)
   end

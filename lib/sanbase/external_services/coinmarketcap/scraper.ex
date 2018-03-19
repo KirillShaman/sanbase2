@@ -8,6 +8,7 @@ defmodule Sanbase.ExternalServices.Coinmarketcap.Scraper do
   plug(Tesla.Middleware.BaseUrl, "https://coinmarketcap.com/currencies")
   plug(Tesla.Middleware.Compression)
   plug(Tesla.Middleware.Logger)
+  plug(Tesla.Middleware.FollowRedirects, max_redirects: 10)
 
   def fetch_project_page(coinmarketcap_id) do
     %Tesla.Env{status: 200, body: body} = get("/#{coinmarketcap_id}/")
